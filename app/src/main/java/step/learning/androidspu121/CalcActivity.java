@@ -1,5 +1,6 @@
 package step.learning.androidspu121;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -36,15 +37,39 @@ public class CalcActivity extends AppCompatActivity {
     }
     private void digitClick( View view ) {  // для цифрових кнопок
         String result = tvResult.getText().toString() ;
-        result += ( ( Button ) view ).getText() ;
+        if( result.equals( getString( R.string.calc_btn_0 ) ) ) {
+            result = ( (Button) view ).getText().toString() ;
+        }
+        else {
+            result += ( (Button) view ).getText() ;
+        }
         tvResult.setText( result ) ;
     }
     private void clearClick( View view ) {   // [ C ]
         tvExpression.setText( "" ) ;
         tvResult.setText( R.string.calc_btn_0 ) ;
     }
+    /*
+    Зміна конфігурації
+    "+" автоматично визначається потрібний ресурс
+    "-" активність перестворюється і втрачаються напрацьовані дані
+    Для того щоб мати можливість збереження/відновлення цих даних
+    задаються наступні обробники:
+     */
+    @Override
+    protected void onSaveInstanceState( @NonNull Bundle outState ) {
+        super.onSaveInstanceState( outState );
+        outState.putCharSequence( "expression", tvExpression.getText() );
+        outState.putCharSequence( "result", tvResult.getText() );
+    }
 
+    @Override
+    protected void onRestoreInstanceState( @NonNull Bundle savedInstanceState ) {
+        super.onRestoreInstanceState( savedInstanceState );
+        tvExpression.setText( savedInstanceState.getCharSequence( "expression" ) );
+        tvResult.setText( savedInstanceState.getCharSequence( "result" ) );
+    }
 }
 /*
-Д.З. Виконати розмітку головної активності та активності калькулятора
+Д.З. Завершити роботу з проєктом "калькулятор"
  */
