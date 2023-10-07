@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">AndroidSPU121</string>
+    <string name="main_tv_hello_text">Hello, World!</string>
+    <string name="main_button_hello_text">Press me</string>
+
+    <string name="calc_title">Calculator</string>
+    <string name="calc_btn_percent">%</string>
+    <string name="calc_btn_ce">CE</string>
+    <string name="calc_btn_c">C</string>
+    <string name="calc_btn_backspace">\u232B</string>
+    <string name="calc_btn_inverse">\u00B9/\u2093</string>
+    <string name="calc_btn_square">x\u00B2</string>
+    <string name="calc_btn_sqrt">\u221A\u2093\u0304</string>
+    <string name="calc_btn_divide">\u00F7</string>
+    <string name="calc_btn_multiplication">\u2715</string>
+    <string name="calc_btn_minus">\u2212</string>
+    <string name="calc_btn_plus">\uFF0B</string>
+    <string name="calc_btn_plus_minus">\u207A\u2215\u208B</string>
+    <string name="calc_btn_comma">,</string>
+    <string name="calc_btn_equal">\uFF1D</string>
+    <string name="calc_btn_0">\uA668</string>
+    <string name="calc_btn_1">1</string>
+    <string name="calc_btn_2">2</string>
+    <string name="calc_btn_3">3</string>
+    <string name="calc_btn_4">4</string>
+    <string name="calc_btn_5">5</string>
+    <string name="calc_btn_6">6</string>
+    <string name="calc_btn_7">7</string>
+    <string name="calc_btn_8">8</string>
+    <string name="calc_btn_9">9</string>
+    <string name="calc_div_zero_message">Cannot divide by zero</string>
+</resources>
