@@ -7,7 +7,10 @@
     <!-- 2048 -->
     <string name="game_tv_title">2048</string>
     <string name="game_tv_hint">З\'єднуйте числа збираючи 2048</string>
-
+    <string name="game_tv_score">РАХУНОК\n%d</string>
+    <string name="game_tv_best">РЕКОРД\n%d</string>
+    <string name="game_btn_new">НОВА</string>
+    <string name="game_btn_undo">НАЗАД</string>
 
     <!-- Calculator -->
     <string name="calc_title">Calculator</string>

@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 2048 -->
+    <style name="game_cell">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="game_cell_0" parent="game_cell">
+        <item name="android:background">@color/game_cell_background_0</item>
+        <item name="android:textColor">@color/game_cell_foreground_0</item>
+        <item name="android:textSize">50sp</item>
+    </style>
+    <style name="game_cell_2" parent="game_cell">
+        <item name="android:background">@color/game_cell_background_2</item>
+        <item name="android:textColor">@color/game_cell_foreground_2</item>
+        <item name="android:textSize">50sp</item>
+    </style>
+    <style name="game_cell_4" parent="game_cell">
+        <item name="android:background">@color/game_cell_background_4</item>
+        <item name="android:textColor">@color/game_cell_foreground_4</item>
+        <item name="android:textSize">50sp</item>
+    </style>
+    <style name="game_cell_8" parent="game_cell">
+        <item name="android:background">@color/game_cell_background_8</item>
+        <item name="android:textColor">@color/game_cell_foreground_8</item>
+        <item name="android:textSize">50sp</item>
+    </style>
+
+    <!-- Calculator -->
     <style name="calc_btn">
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_margin">3dp</item>

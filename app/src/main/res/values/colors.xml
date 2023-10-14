@@ -11,6 +11,18 @@
     <color name="game_score_background">#3E3933</color>
     <color name="game_score_foreground">#FCF4F4</color>
 
+    <color name="game_field_background">#A49080</color>
+    <color name="game_cell_foreground_0">#C0AE9D</color>
+    <color name="game_cell_background_0">#C0AE9D</color>
+    <color name="game_cell_foreground_2">#796D66</color>
+    <color name="game_cell_background_2">#EFE3DB</color>
+    <color name="game_cell_foreground_4">#7A6D68</color>
+    <color name="game_cell_background_4">#EDE0CE</color>
+    <color name="game_cell_foreground_8">#F8F6F2</color>
+    <color name="game_cell_background_8">#F4B17F</color>
+
+
+
     <!-- Calculator -->
     <color name="calc_layout_background">#202020</color>
     <color name="calc_text">#FEFEFE</color>
