@@ -19,10 +19,12 @@ public class MainActivity extends AppCompatActivity {
 
         // View - пробатько всіх UI елементів
         tvHello = findViewById( R.id.main_tv_hello ) ;
-        tvHello.setText( R.string.main_tv_hello_text );
+        // tvHello.setText( R.string.main_tv_hello_text );
 
         Button btnHello = findViewById( R.id.main_button_hello );
         btnHello.setOnClickListener( this::helloClick );
+
+        findViewById( R.id.main_button_game ).setOnClickListener( this::startGame ) ;
     }
 
     // всі обробники подій повинні мати такий прототип, view - sender
@@ -30,5 +32,8 @@ public class MainActivity extends AppCompatActivity {
         // tvHello.setText( tvHello.getText() + "!" ) ;
         Intent calcIntent = new Intent( this.getApplicationContext(), CalcActivity.class ) ;
         startActivity( calcIntent );
+    }
+    private void startGame( View view ) {
+        startActivity( new Intent( this.getApplicationContext(), GameActivity.class ) );
     }
 }

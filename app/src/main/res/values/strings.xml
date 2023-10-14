@@ -1,8 +1,15 @@
 <resources>
     <string name="app_name">AndroidSPU121</string>
-    <string name="main_tv_hello_text">Hello, World!</string>
-    <string name="main_button_hello_text">Press me</string>
+    <string name="main_tv_hello_text">Основи Android</string>
+    <string name="main_button_calc">Калькулятор</string>
+    <string name="main_button_game">Гра 2048</string>
 
+    <!-- 2048 -->
+    <string name="game_tv_title">2048</string>
+    <string name="game_tv_hint">З\'єднуйте числа збираючи 2048</string>
+
+
+    <!-- Calculator -->
     <string name="calc_title">Calculator</string>
     <string name="calc_btn_percent">%</string>
     <string name="calc_btn_ce">CE</string>

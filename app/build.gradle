@@ -29,6 +29,8 @@ android {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/net.sourceforge.jeval/jeval
+    implementation group: 'net.sourceforge.jeval', name: 'jeval', version: '0.9.4'
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'

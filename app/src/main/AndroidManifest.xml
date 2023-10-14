@@ -13,12 +13,15 @@
         android:theme="@style/Theme.AndroidSPU121"
         tools:targetApi="31">
         <activity
+            android:name=".GameActivity"
+            android:exported="false" />
+        <activity
             android:name=".CalcActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="locked"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="locked">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

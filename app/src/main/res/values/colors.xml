@@ -2,6 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- 2048 -->
+    <color name="game_title_background">#ECC962</color>
+    <color name="game_title_foreground">#F8EFF6</color>
+    <color name="game_btn_background">#F85C3D</color>
+    <color name="game_btn_foreground">#F7F6F1</color>
+    <color name="game_score_background">#3E3933</color>
+    <color name="game_score_foreground">#FCF4F4</color>
+
+    <!-- Calculator -->
     <color name="calc_layout_background">#202020</color>
     <color name="calc_text">#FEFEFE</color>
     <color name="calc_expression_text">#929292</color>
