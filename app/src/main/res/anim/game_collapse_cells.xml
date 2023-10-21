@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scale xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXScale="1.0"
+    android:fromYScale="1.0"
+    android:toXScale="1.15"
+    android:toYScale="1.15"
+    android:duration="200"
+    android:pivotX="50%"
+    android:pivotY="50%"
+    android:repeatMode="reverse"
+    android:repeatCount="1"
+    />
+<!--
+Анімація масштабу (scale) може використовуватись для
+"пульсації"
+Для ряду анімацій додається поняття "нерухомої точки"
+або "pivot" - точка яка протягом анімації не змінює
+своєї позиції
+                            *****
+P**     P****      ***      *****
+*** ->  *****      *P*  =>  **P**
+***     *****      ***      *****
+        *****               *****
+        *****
+а також може знадобитись плавна анімація зворотного
+ходу (повернення у вихідний стан)
+android:repeatMode="reverse"  - з плавним поверненням
+-->
