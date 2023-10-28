@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
         btnHello.setOnClickListener( this::helloClick );
 
         findViewById( R.id.main_button_game ).setOnClickListener( this::startGame ) ;
+        findViewById( R.id.main_button_chat ).setOnClickListener( this::startChat ) ;
     }
 
     // всі обробники подій повинні мати такий прототип, view - sender
@@ -35,5 +36,8 @@ public class MainActivity extends AppCompatActivity {
     }
     private void startGame( View view ) {
         startActivity( new Intent( this.getApplicationContext(), GameActivity.class ) );
+    }
+    private void startChat( View view ) {
+        startActivity( new Intent( this.getApplicationContext(), ChatActivity.class ) );
     }
 }

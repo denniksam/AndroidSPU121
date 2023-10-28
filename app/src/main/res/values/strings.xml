@@ -3,6 +3,12 @@
     <string name="main_tv_hello_text">Основи Android</string>
     <string name="main_button_calc">Калькулятор</string>
     <string name="main_button_game">Гра 2048</string>
+    <string name="main_button_chat">Чат</string>
+
+    <!-- Chat -->
+    <string name="chat_tv_title">Комунікатор</string>
+    <string name="chat_tv_nik">Нік у чаті:</string>
+    <string name="chat_et_nik">DNS</string>
 
     <!-- 2048 -->
     <string name="game_tv_title">2048</string>

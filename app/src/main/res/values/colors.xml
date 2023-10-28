@@ -3,6 +3,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- Chat -->
+    <color name="chat_msg_mine_background">#E8D6A0</color>
+    <color name="chat_msg_mine_border">#62ECD0</color>
+    <color name="chat_msg_other_background">#98F1EE</color>
+    <color name="chat_msg_other_border">#ECC962</color>
+
     <!-- 2048 -->
     <color name="game_title_background">#ECC962</color>
     <color name="game_title_foreground">#F8EFF6</color>
