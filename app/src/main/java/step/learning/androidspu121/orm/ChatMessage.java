@@ -1,6 +1,7 @@
 package step.learning.androidspu121.orm;
 
 import android.util.Log;
+import android.view.View;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,6 +13,8 @@ public class ChatMessage {
     private String author ;
     private String text ;
     private String moment ;
+
+    transient private View view;
 
     private static final SimpleDateFormat momentFormat =
             new SimpleDateFormat( "yyyy-MM-dd hh:mm:ss", Locale.UK ) ;
@@ -25,6 +28,15 @@ public class ChatMessage {
             return null ;
         }
     }
+
+    public View getView() {
+        return view;
+    }
+
+    public void setView( View view ) {
+        this.view = view;
+    }
+
     public String getId() {
         return id;
     }

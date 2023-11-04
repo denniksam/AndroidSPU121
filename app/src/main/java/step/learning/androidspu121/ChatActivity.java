@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -26,6 +27,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import step.learning.androidspu121.orm.ChatMessage;
@@ -40,17 +42,23 @@ public class ChatActivity extends AppCompatActivity {
     private EditText etMessage ;
     private ScrollView svContainer ;
     private LinearLayout llContainer ;
+    private Handler handler ;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_chat );
-        new Thread( this::loadChatMessages ).start() ;
         etNik = findViewById( R.id.chat_et_nik ) ;
         etMessage = findViewById( R.id.chat_et_message ) ;
         svContainer = findViewById( R.id.chat_sv_container ) ;
         llContainer = findViewById( R.id.chat_ll_container ) ;
         findViewById( R.id.chat_btn_send ).setOnClickListener( this::sendButtonClick );
+        handler = new Handler();
+        handler.post( this::updateChat ) ;
+    }
+    private void updateChat() {
+        new Thread( this::loadChatMessages ).start() ;
+        handler.postDelayed( this::updateChat, 3000 ) ;
     }
     private void sendButtonClick( View view ) {
         String nik = etNik.getText().toString() ;
@@ -99,6 +107,7 @@ public class ChatActivity extends AppCompatActivity {
             int statusCode = connection.getResponseCode() ;
             if( statusCode == 201 ) {  // у разі успіху приходить лише статус, тіла немає
                 Log.d( "postChatMessage", "Sent OK" ) ;
+                new Thread( this::loadChatMessages ).start();
             }
             else {  // якщо не успіх, то повідомлення про помилку - у тілі
                 InputStream inputStream = connection.getInputStream() ;
@@ -106,6 +115,8 @@ public class ChatActivity extends AppCompatActivity {
                 inputStream.close();
                 Log.e( "postChatMessage", statusCode + " " + responseBody ) ;
             }
+            // 4. Закриваємо підключення, звільняємо ресурс
+            connection.disconnect();
         }
         catch( Exception ex ) {
             Log.e( "postChatMessage", ex.getMessage() ) ;
@@ -127,6 +138,9 @@ public class ChatActivity extends AppCompatActivity {
             InputStream chatStream = chatUrl.openStream() ;
             String data = readString( chatStream ) ;
             ChatResponse chatResponse = gson.fromJson( data, ChatResponse.class ) ;
+            // впорядковуємо відповідь - останні повідомлення "знизу", тобто за зростанням дати-часу
+            chatResponse.getData().sort( Comparator.comparing( ChatMessage::getMomentAsDate ) );
+
             boolean wasNewMessage = false ;
             for( ChatMessage chatMessage : chatResponse.getData() ) {
                 if( chatMessages.stream().noneMatch(
@@ -155,8 +169,21 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
     private void showChatMessages() {
+        boolean needScroll = false ;
         for( ChatMessage chatMessage : this.chatMessages ) {
-            llContainer.addView( createChatMessageView( chatMessage ) ) ;
+            if( chatMessage.getView() == null ) {
+                View messageView = createChatMessageView( chatMessage );
+                chatMessage.setView( messageView );
+                llContainer.addView( messageView );
+                needScroll = true ;  // додавання View вниз вимагає прокрутки контейнера
+            }
+        }
+        if( needScroll ) {
+            // Прокрутка контейнера (ScrollView) до самого нижнього положення.
+            // !! Але додавання елементів до контейнера у попередніх операціях (addView)
+            //    ще не "відпрацьована" на UI - як елементи вони є, але їх розміри ще не
+            //    прораховані. Команду прокрутки треба ставити у чергу за відображенням
+            svContainer.post( () -> svContainer.fullScroll( View.FOCUS_DOWN ) );
         }
     }
     private View createChatMessageView( ChatMessage chatMessage ) {
@@ -224,6 +251,14 @@ public class ChatActivity extends AppCompatActivity {
      Оскільки робота з мережею ведеться з окремого потоку, прямі звернені до
      елементів UI не дозволяються. Делегування запуску здійснюється методом
      runOnUiThread(...)
+ */
+/*
+Періодичний запуск. Особливості.
+Є дві поширені схеми періодичного запуску - таймер та подійний цикл
+Таймер, як правило, створюється як окремий потік, який подає хроно-імпульси.
+Подійний цикл використовує внутрішній цикл застосунку, плануючи відтермінований
+запуск.
+Для управління внутрішнім циклом використовують об'єкти Handler
  */
 /*
 Д.З. Проєкт "Чат"
