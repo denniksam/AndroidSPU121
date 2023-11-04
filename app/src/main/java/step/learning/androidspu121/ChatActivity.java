@@ -3,6 +3,8 @@ package step.learning.androidspu121;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -18,6 +20,8 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,6 +39,7 @@ import step.learning.androidspu121.orm.ChatResponse;
 
 public class ChatActivity extends AppCompatActivity {
     private final static String chatHost = "https://chat.momentfor.fun" ;
+    private static final String savesFilename = "saves.chat";
     private final byte[] buffer = new byte[ 8192 ] ;
     private final Gson gson = new Gson() ;
     private final List<ChatMessage> chatMessages = new ArrayList<>() ;
@@ -53,9 +58,42 @@ public class ChatActivity extends AppCompatActivity {
         svContainer = findViewById( R.id.chat_sv_container ) ;
         llContainer = findViewById( R.id.chat_ll_container ) ;
         findViewById( R.id.chat_btn_send ).setOnClickListener( this::sendButtonClick );
+        findViewById( R.id.chat_btn_save_nik ).setOnClickListener( this::saveNikClick );
         handler = new Handler();
         handler.post( this::updateChat ) ;
+        if( ! loadNik() ) {
+            etNik.requestFocus();
+            Toast.makeText( this, "Виберіть собі нік та збережіть його", Toast.LENGTH_LONG ).show();
+        }
     }
+    private void saveNikClick( View view ) {
+        String nik = etNik.getText().toString() ;
+        if( nik.isEmpty() ) {
+            Toast.makeText( this, "Необхідно заповнити поле", Toast.LENGTH_SHORT ).show();
+            etNik.requestFocus();
+            return;
+        }
+        try( FileOutputStream writer = openFileOutput( savesFilename, Context.MODE_PRIVATE ) ) {
+            writer.write( nik.getBytes( StandardCharsets.UTF_8 ) );
+        }
+        catch( IOException ex ) {
+            Log.e( "saveNikClick", ex.getMessage() ) ;
+        }
+    }
+    private boolean loadNik() {
+        try( FileInputStream reader = openFileInput( savesFilename ) ) {
+            String nik = readString( reader ) ;
+            if( nik.isEmpty() ) {
+                return false ;
+            }
+            etNik.setText( nik );
+            return true ;
+        }
+        catch( IOException ex ) {
+            Log.e( "loadNik", ex.getMessage() ) ;
+            return false ;
+        }
+    }  // /data/user/0/step.learning.androidspu121/files/saves.chat
     private void updateChat() {
         new Thread( this::loadChatMessages ).start() ;
         handler.postDelayed( this::updateChat, 3000 ) ;
@@ -108,6 +146,10 @@ public class ChatActivity extends AppCompatActivity {
             if( statusCode == 201 ) {  // у разі успіху приходить лише статус, тіла немає
                 Log.d( "postChatMessage", "Sent OK" ) ;
                 new Thread( this::loadChatMessages ).start();
+                runOnUiThread( () -> {
+                    etMessage.setText( "" );
+                    etMessage.requestFocus() ;
+                });
             }
             else {  // якщо не успіх, то повідомлення про помилку - у тілі
                 InputStream inputStream = connection.getInputStream() ;
@@ -187,6 +229,8 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
     private View createChatMessageView( ChatMessage chatMessage ) {
+        // у цьому варіанті свої повідомлення визначаються за збігом автора
+        boolean isMine = chatMessage.getAuthor().contentEquals( etNik.getText() ) ;
         // Створення елемента програмно складається з кількох дій
         // 1. "Внутрішні" налаштування
         // 2. "Зовнішні" - правила "вбудови" елемента в інші елементи (Layout-и)
@@ -196,34 +240,30 @@ public class ChatActivity extends AppCompatActivity {
         ) ;
         layoutParams.setMargins( 5, 5, 5, 5 ) ;
 
-        // "other"
-        // layoutParams.gravity = Gravity.START ;
-        // "mine"
-        layoutParams.gravity = Gravity.END ;
+        layoutParams.gravity = isMine
+            ? Gravity.END
+            : Gravity.START;
 
-        /*  margin
-               ---messageLayout {
-                       textView{ Author }
-                       textView{ Text }
-                   }
-         */
         LinearLayout messageLayout = new LinearLayout( this ) ;
         messageLayout.setLayoutParams( layoutParams ) ;
         messageLayout.setPadding( 20, 10, 20, 10 ) ;
         messageLayout.setOrientation( LinearLayout.VERTICAL ) ;
-        // "other"
-        // messageLayout.setBackground(
-        //         AppCompatResources.getDrawable(
-        //                 ChatActivity.this,
-        //                 R.drawable.chat_message_other ) ) ;
-        // "mine"
         messageLayout.setBackground(
                    AppCompatResources.getDrawable(
                            ChatActivity.this,
-                           R.drawable.chat_message_mine ) ) ;
+                           isMine
+                               ? R.drawable.chat_message_mine
+                               : R.drawable.chat_message_other ) ) ;
 
         TextView textView = new TextView( this ) ;
+        textView.setText( chatMessage.getMoment() ) ;
+        textView.setTextSize( 12 ) ;
+        textView.setTypeface(null, Typeface.ITALIC ) ;
+        messageLayout.addView( textView ) ;
+
+        textView = new TextView( this ) ;
         textView.setText( chatMessage.getAuthor() ) ;
+        textView.setTypeface(null, Typeface.BOLD ) ;
         messageLayout.addView( textView ) ;
 
         textView = new TextView( this ) ;
@@ -261,10 +301,9 @@ public class ChatActivity extends AppCompatActivity {
 Для управління внутрішнім циклом використовують об'єкти Handler
  */
 /*
-Д.З. Проєкт "Чат"
-- зробити одночасне відображення повідомлень у двох стилях (власні та інші)
-   (через один або за випадковим алгоритмом)
-- додати іконку "нове повідомлення" (дзвоник або конверт або ...), реалізувати для
-   неї анімацію, програвати її при натисканні кнопки "надіслати"
-- додати звук нового повідомлення, програвати його разом з анімацією
+Д.З. Завершити Проєкт "Чат"
+
+Завантажити Юніті
+1) Хаб
+2) Installs
  */
