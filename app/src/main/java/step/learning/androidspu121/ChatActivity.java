@@ -12,14 +12,18 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,18 +50,82 @@ public class ChatActivity extends AppCompatActivity {
         etMessage = findViewById( R.id.chat_et_message ) ;
         svContainer = findViewById( R.id.chat_sv_container ) ;
         llContainer = findViewById( R.id.chat_ll_container ) ;
+        findViewById( R.id.chat_btn_send ).setOnClickListener( this::sendButtonClick );
+    }
+    private void sendButtonClick( View view ) {
+        String nik = etNik.getText().toString() ;
+        String message = etMessage.getText().toString();
+        if( nik.isEmpty() ) {
+            Toast.makeText( this, "Введіть нік", Toast.LENGTH_SHORT ).show();
+            return;
+        }
+        if( message.isEmpty() ) {
+            Toast.makeText( this, "Введіть повідомлення", Toast.LENGTH_SHORT ).show();
+            return;
+        }
+        final ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setAuthor( nik );
+        chatMessage.setText( message );
+        new Thread( () -> postChatMessage(chatMessage) ).start();
+    }
+    private void postChatMessage( ChatMessage chatMessage ) {
+        try {
+            // POST повідомлення надсилається у декілька етапів
+            // 1. Налаштування з'єднання
+            URL url = new URL( chatHost );
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection() ;
+            connection.setDoOutput( true );  // у з'єднання можна писати (Output) - формувати тіло
+            connection.setDoInput( true );   // можна читати - одержувати тіло відповіді
+            connection.setRequestMethod( "POST" );
+            // заголовки НТТР встановлюються як RequestProperty
+            connection.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
+            connection.setRequestProperty( "Accept", "*/*" );
+            connection.setChunkedStreamingMode( 0 );  // не ділити на блоки - надсилати одним пакетом
+
+            // 2. Формуємо тіло запиту (пишемо Output)
+            OutputStream outputStream = connection.getOutputStream() ;
+            // author=Nik&msg=Message   !! 2+2-> &msg=2+2 --> 2 2 (+ в url це код пробіла)
+            // 2&2 --> author=Nik&msg=2&2  --> 'author'=Nik, 'msg'=2, '2'=null
+            // My %20 --> My [space] -- %20 - код пробіла ==> перед надсиланням дані треба кодувати
+            String body = String.format( "author=%s&msg=%s",
+                    URLEncoder.encode( chatMessage.getAuthor(), StandardCharsets.UTF_8.name() ),
+                    URLEncoder.encode( chatMessage.getText(), StandardCharsets.UTF_8.name() )
+            ) ;
+            outputStream.write( body.getBytes( StandardCharsets.UTF_8 ) );
+            outputStream.flush();
+            outputStream.close();
+
+            // 3. Одержуємо відповідь, перевіряємо статус, за потреби читаємо тіло
+            int statusCode = connection.getResponseCode() ;
+            if( statusCode == 201 ) {  // у разі успіху приходить лише статус, тіла немає
+                Log.d( "postChatMessage", "Sent OK" ) ;
+            }
+            else {  // якщо не успіх, то повідомлення про помилку - у тілі
+                InputStream inputStream = connection.getInputStream() ;
+                String responseBody = readString( inputStream ) ;
+                inputStream.close();
+                Log.e( "postChatMessage", statusCode + " " + responseBody ) ;
+            }
+        }
+        catch( Exception ex ) {
+            Log.e( "postChatMessage", ex.getMessage() ) ;
+        }
+    }
+    private String readString( InputStream inputStream ) throws IOException {
+        ByteArrayOutputStream builder = new ByteArrayOutputStream() ;
+        int bytesRead ;
+        while( ( bytesRead = inputStream.read(buffer) ) > 0 ) {
+            builder.write( buffer, 0, bytesRead ) ;
+        }
+        String result = builder.toString( StandardCharsets.UTF_8.name() ) ;
+        builder.close() ;
+        return result ;
     }
     private void loadChatMessages() {
         try {
             URL chatUrl = new URL( chatHost ) ;
             InputStream chatStream = chatUrl.openStream() ;
-
-            ByteArrayOutputStream builder = new ByteArrayOutputStream() ;
-            int bytesRead ;
-            while( ( bytesRead = chatStream.read(buffer) ) > 0 ) {
-                builder.write( buffer, 0, bytesRead ) ;
-            }
-            String data = builder.toString( StandardCharsets.UTF_8.name() ) ;
+            String data = readString( chatStream ) ;
             ChatResponse chatResponse = gson.fromJson( data, ChatResponse.class ) ;
             boolean wasNewMessage = false ;
             for( ChatMessage chatMessage : chatResponse.getData() ) {
@@ -71,7 +139,6 @@ public class ChatActivity extends AppCompatActivity {
             if( wasNewMessage ) {
                 runOnUiThread( this::showChatMessages ) ;
             }
-            builder.close() ;
             chatStream.close();
         }
         catch( MalformedURLException ex ) {
